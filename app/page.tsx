@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { QueryClient, QueryClientProvider ,useQuery} from '@tanstack/react-query';
 import type { AppProps } from 'next/app';
-
+import Tree from './components/menu';
 
 
 const queryClient = new QueryClient()
@@ -31,9 +31,12 @@ function Example() {
 
   return (
     <div>
-      <h1>{JSON.stringify(data.data)}</h1>
+      <Tree list={data.data} />
     </div>
   )
 }
+
+
+
 
 export default App;
