@@ -9,7 +9,7 @@ type Category = {
 
 const Tree = ({ list }: { list: Category[] }) => {
   return (
-    <ul className="max-w-lg mx-auto bg-white shadow-lg rounded-lg p-4 border border-gray-200" dir="rtl">
+    <ul className="w-64 max-w-full mx-auto bg-white shadow-lg rounded-lg p-4 border border-gray-300" dir="rtl">
       {list.map((node) => (
         <TreeNode key={node.id} node={node} level={0} />
       ))}
@@ -23,7 +23,7 @@ const TreeNode = ({ node, level }: { node: Category; level: number }) => {
   return (
     <li>
       <div
-        className={`flex items-center cursor-pointer py-2 px-3 rounded-lg hover:bg-gray-100 transition duration-200 margin-right-${level}`}
+        className={`flex items-center cursor-pointer py-2 px-3 rounded-lg hover:bg-gray-100 transition duration-200 ml-${level * 4}`}
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex items-center gap-2">
@@ -36,7 +36,10 @@ const TreeNode = ({ node, level }: { node: Category; level: number }) => {
           ) : (
             <div className="w-4 h-4"></div>
           )}
-          <span className="text-sm font-medium text-gray-800">{node.name}</span>
+          
+          <span className="text-sm font-medium text-gray-800">
+            <span dir="ltr">{node.name}</span>
+          </span>
         </div>
       </div>
       {isOpen && node.children.length > 0 && (
