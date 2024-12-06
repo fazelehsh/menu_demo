@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState, useEffect } from "react";
 import { HiChevronLeft, HiChevronDown, HiSearch } from "react-icons/hi";
 
@@ -5,6 +7,15 @@ type Category = {
   id: number;
   name: string;
   children: Category[];
+};
+
+const filterCategories = (categories: Category[], query: string): Category[] => {
+  return categories
+    .filter((category) => category.name.toLowerCase().includes(query.toLowerCase())) 
+    .map((category) => ({
+      ...category,
+      children: filterCategories(category.children, query), 
+    }));
 };
 
 const Tree = ({ list }: { list: Category[] }) => {
@@ -15,35 +26,39 @@ const Tree = ({ list }: { list: Category[] }) => {
     if (searchQuery === "") {
       setFilteredCategories(list);
     } else {
-      const searchInCategories = (categories: Category[]): Category[] => {
+      const searchInCategories = (categories: Category[], query: string): Category[] => {
         return categories
-          .filter((category) =>
-            category.name.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-          .map((category) => ({
-            ...category,
-            children: searchInCategories(category.children),
-          }));
+          .map((category) => {
+            const filteredChildren = filterCategories(category.children, query);
+            const matchesQuery = category.name.toLowerCase().includes(query.toLowerCase());
+            if (matchesQuery || filteredChildren.length > 0) {
+              return {
+                ...category,
+                children: filteredChildren,
+              };
+            }
+            return null;
+          })
+          .filter((e)=>e != null) as Category[];
       };
-      setFilteredCategories(searchInCategories(list));
+      setFilteredCategories(searchInCategories(list,searchQuery));
     }
   }, [searchQuery, list]);
 
   return (
     <div className="max-w-lg mx-auto bg-white shadow-lg rounded-lg p-4 border border-gray-200" dir="rtl">
-      {/* جعبه جستجو */}
       <div className="flex items-center mb-4 border border-gray-300 rounded-lg p-2">
         <HiSearch className="text-gray-500 w-5 h-5" />
         <input
           type="text"
           placeholder="جستجو در دسته‌بندی‌ها..."
-          className="ml-2 w-full p-1 text-sm"
+          className="ml-2 w-full p-1 text-sm mr-4"
           value={searchQuery}
+          style={{outline: "none"}}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
 
-      {/* نمایش دسته‌بندی‌های فیلتر شده */}
       <ul>
         {filteredCategories.map((node) => (
           <TreeNode key={node.id} node={node} level={0} />
