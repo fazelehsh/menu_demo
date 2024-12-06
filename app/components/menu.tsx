@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { HiChevronRight, HiChevronDown } from "react-icons/hi";
+import { HiChevronLeft, HiChevronDown } from "react-icons/hi";
 
 type Category = {
   id: number;
@@ -9,37 +9,41 @@ type Category = {
 
 const Tree = ({ list }: { list: Category[] }) => {
   return (
-    <ul className="space-y-2 max-w-md mx-auto">
+    <ul className="max-w-lg mx-auto bg-white shadow-lg rounded-lg p-4 border border-gray-200" dir="rtl">
       {list.map((node) => (
-        <TreeNode key={node.id} node={node} />
+        <TreeNode key={node.id} node={node} level={0} />
       ))}
     </ul>
   );
 };
 
-const TreeNode = ({ node }: { node: Category }) => {
+const TreeNode = ({ node, level }: { node: Category; level: number }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <li>
-      <button
+      <div
+        className={`flex items-center cursor-pointer py-2 px-3 rounded-lg hover:bg-gray-100 transition duration-200 margin-right-${level}`}
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full h-12 px-4 bg-blue-100 rounded-lg shadow-md hover:bg-blue-200 transition duration-200"
-        style={{ minWidth: "200px" }} // Ensures a standard size
       >
-        <span className="flex items-center gap-2 text-base font-medium text-blue-700">
-          {node.children.length > 0 &&
-            (isOpen ? (
-              <HiChevronDown className="w-5 h-5" />
+        <div className="flex items-center gap-2">
+          {node.children.length > 0 ? (
+            isOpen ? (
+              <HiChevronDown className="text-gray-500 w-4 h-4" />
             ) : (
-              <HiChevronRight className="w-5 h-5" />
-            ))}
-          {node.name}
-        </span>
-      </button>
+              <HiChevronLeft className="text-gray-500 w-4 h-4" />
+            )
+          ) : (
+            <div className="w-4 h-4"></div>
+          )}
+          <span className="text-sm font-medium text-gray-800">{node.name}</span>
+        </div>
+      </div>
       {isOpen && node.children.length > 0 && (
-        <ul className="ml-6 mt-2 border-l-2 border-blue-300 pl-4">
-          <Tree list={node.children} />
+        <ul>
+          {node.children.map((child) => (
+            <TreeNode key={child.id} node={child} level={level + 1} />
+          ))}
         </ul>
       )}
     </li>
